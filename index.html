@@ -1,0 +1,511 @@
+cd /home/vignatenko/sofia/rfl/rki_video_app
+
+cat > app/templates/index.html <<'EOF'
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RKI Video App</title>
+    <style>
+        :root {
+            --bg: #f6fbf7;
+            --bg-soft: #eef7f0;
+            --card: #ffffff;
+            --border: #d9eadc;
+            --border-strong: #c7dfcb;
+            --text: #1f3b2d;
+            --text-soft: #587365;
+            --accent: #2e9f5d;
+            --accent-dark: #257f4a;
+            --accent-soft: #e6f6eb;
+            --ok-bg: #ebf9f0;
+            --ok-border: #9fd6b1;
+            --error-bg: #fff3f1;
+            --error-border: #e8b4ac;
+            --shadow: 0 10px 30px rgba(42, 88, 57, 0.08);
+            --radius-lg: 20px;
+            --radius-md: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background: linear-gradient(180deg, #f9fdf9 0%, #f3faf5 100%);
+            color: var(--text);
+        }
+
+        .container {
+            width: min(1120px, calc(100% - 32px));
+            margin: 32px auto 48px;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #ffffff 0%, #f3fbf5 100%);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            padding: 30px;
+            margin-bottom: 22px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 7px 14px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent-dark);
+            border: 1px solid #cfead7;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: clamp(28px, 4vw, 40px);
+            line-height: 1.1;
+            color: #183225;
+        }
+
+        .hero p {
+            margin: 0;
+            max-width: 860px;
+            line-height: 1.65;
+            color: var(--text-soft);
+            font-size: 16px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 22px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 24px;
+        }
+
+        .card h2 {
+            margin: 0 0 10px 0;
+            font-size: 22px;
+            color: #183225;
+        }
+
+        .card p {
+            margin: 0 0 18px 0;
+            color: var(--text-soft);
+            line-height: 1.6;
+        }
+
+        .form-stack {
+            display: grid;
+            gap: 16px;
+        }
+
+        .field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .field label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #294636;
+        }
+
+        .input,
+        .select,
+        .button,
+        textarea {
+            width: 100%;
+            font: inherit;
+        }
+
+        .input,
+        .select {
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-md);
+            padding: 13px 14px;
+            background: #fcfffc;
+            color: var(--text);
+            outline: none;
+        }
+
+        .input::file-selector-button {
+            margin-right: 12px;
+            border: 0;
+            border-radius: 10px;
+            padding: 10px 14px;
+            background: var(--accent-soft);
+            color: var(--accent-dark);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .button {
+            border: 0;
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            background: linear-gradient(135deg, var(--accent), #43b96f);
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .mini-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .mini-stat {
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .mini-stat .label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #6a8376;
+            margin-bottom: 8px;
+        }
+
+        .mini-stat .value {
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.35;
+            color: #1e382b;
+            word-break: break-word;
+        }
+
+        .status-box,
+        .meta-box {
+            margin-top: 18px;
+            border-radius: 16px;
+            padding: 15px 16px;
+            border: 1px solid var(--border);
+            background: #fbfefb;
+            white-space: pre-wrap;
+        }
+
+        .status-box.ok {
+            background: var(--ok-bg);
+            border-color: var(--ok-border);
+        }
+
+        .status-box.error {
+            background: var(--error-bg);
+            border-color: var(--error-border);
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid #b8d8c1;
+            border-top-color: var(--accent);
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        .spinner.visible {
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .outputs {
+            display: grid;
+            gap: 22px;
+            margin-top: 22px;
+        }
+
+        .output-box {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 22px;
+        }
+
+        .output-box h3 {
+            margin: 0 0 12px 0;
+            font-size: 21px;
+            color: #183225;
+        }
+
+        textarea {
+            min-height: 300px;
+            border: 1px solid var(--border-strong);
+            border-radius: 16px;
+            padding: 16px;
+            resize: vertical;
+            background: #fcfffc;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .footer-note {
+            margin-top: 14px;
+            color: var(--text-soft);
+            font-size: 13px;
+        }
+
+        @media (max-width: 960px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .mini-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                width: min(100% - 20px, 1120px);
+                margin-top: 20px;
+            }
+
+            .hero,
+            .card,
+            .output-box {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <section class="hero">
+            <div class="hero-badge">RKI Video App · Whisper + QWEN</div>
+            <h1>Транскрибация и адаптация видеолекций</h1>
+            <p>
+                Загрузите видео, выберите целевой уровень адаптации и получите
+                полный результат обработки: исходный транскрипт Whisper и
+                адаптированный текст, сгенерированный QWEN.
+            </p>
+        </section>
+
+        <section class="grid">
+            <div class="card">
+                <h2>Обработка видео</h2>
+                <p>
+                    Первый запуск может занять больше времени, потому что модели
+                    загружаются в память. После этого обработка следующих файлов
+                    обычно идет заметно быстрее.
+                </p>
+
+                <form id="uploadForm" class="form-stack">
+                    <div class="field">
+                        <label for="fileInput">Видео</label>
+                        <input class="input" type="file" id="fileInput" name="file" accept="video/*" required />
+                    </div>
+
+                    <div class="field">
+                        <label for="targetLevel">Целевой уровень</label>
+                        <select class="select" id="targetLevel" name="target_level">
+                            <option value="A2-B1" selected>A2–B1</option>
+                            <option value="A2">A2</option>
+                            <option value="B1">B1</option>
+                        </select>
+                    </div>
+
+                    <button id="submitBtn" class="button" type="submit">
+                        Загрузить и обработать
+                    </button>
+                </form>
+
+                <div id="status" class="status-box">
+                    <div class="status-row">
+                        <span id="spinner" class="spinner"></span>
+                        <span id="statusText">Статус появится здесь</span>
+                    </div>
+                </div>
+
+                <div id="meta" class="meta-box">Метаданные обработки появятся здесь</div>
+
+                <div class="footer-note">
+                    После завершения обработки транскрипт и адаптированный текст появятся ниже.
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Сводка</h2>
+                <p>Краткая информация о текущем запуске и параметрах обработки.</p>
+
+                <div class="mini-grid">
+                    <div class="mini-stat">
+                        <div class="label">Модель ASR</div>
+                        <div class="value">Whisper Large</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="label">Модель адаптации</div>
+                        <div class="value">Qwen2.5</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="label">Устройство</div>
+                        <div class="value" id="deviceLabel">CUDA / CPU auto</div>
+                    </div>
+                </div>
+
+                <div class="mini-grid" style="margin-top: 14px;">
+                    <div class="mini-stat">
+                        <div class="label">Файл</div>
+                        <div class="value" id="fileNameBox">—</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="label">Статус</div>
+                        <div class="value" id="statusMini">Ожидание</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="label">Уровень</div>
+                        <div class="value" id="levelMini">A2–B1</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="outputs">
+            <div class="output-box">
+                <h3>Транскрипт Whisper</h3>
+                <textarea id="transcriptOutput" readonly placeholder="Здесь появится транскрипт..."></textarea>
+            </div>
+
+            <div class="output-box">
+                <h3>Адаптированный текст</h3>
+                <textarea id="adaptedOutput" readonly placeholder="Здесь появится адаптированный текст..."></textarea>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const form = document.getElementById("uploadForm");
+        const fileInput = document.getElementById("fileInput");
+        const targetLevel = document.getElementById("targetLevel");
+        const statusBox = document.getElementById("status");
+        const statusText = document.getElementById("statusText");
+        const metaBox = document.getElementById("meta");
+        const transcriptOutput = document.getElementById("transcriptOutput");
+        const adaptedOutput = document.getElementById("adaptedOutput");
+        const submitBtn = document.getElementById("submitBtn");
+        const spinner = document.getElementById("spinner");
+
+        const fileNameBox = document.getElementById("fileNameBox");
+        const statusMini = document.getElementById("statusMini");
+        const levelMini = document.getElementById("levelMini");
+
+        targetLevel.addEventListener("change", () => {
+            levelMini.textContent = targetLevel.value;
+        });
+
+        fileInput.addEventListener("change", () => {
+            fileNameBox.textContent = fileInput.files.length
+                ? fileInput.files[0].name
+                : "—";
+        });
+
+        function setLoadingState(isLoading) {
+            submitBtn.disabled = isLoading;
+            spinner.classList.toggle("visible", isLoading);
+        }
+
+        function setStatus(message, kind = "neutral") {
+            statusBox.className = "status-box";
+            if (kind === "ok") statusBox.classList.add("ok");
+            if (kind === "error") statusBox.classList.add("error");
+
+            statusText.textContent = message;
+            statusMini.textContent =
+                kind === "ok" ? "Готово" :
+                kind === "error" ? "Ошибка" :
+                "В обработке";
+        }
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            if (!fileInput.files.length) {
+                setStatus("Выберите видеофайл.", "error");
+                return;
+            }
+
+            const selectedFile = fileInput.files[0];
+            const selectedLevel = targetLevel.value;
+
+            const formData = new FormData();
+            formData.append("file", selectedFile);
+            formData.append("target_level", selectedLevel);
+
+            transcriptOutput.value = "";
+            adaptedOutput.value = "";
+            metaBox.textContent = "Метаданные обработки появятся здесь";
+            fileNameBox.textContent = selectedFile.name;
+            levelMini.textContent = selectedLevel;
+
+            setLoadingState(true);
+            setStatus("Файл загружается. Идёт транскрибация и адаптация текста...");
+
+            try {
+                const response = await fetch("/upload", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    setStatus("Во время обработки произошла ошибка.", "error");
+                    metaBox.textContent = JSON.stringify(data, null, 2);
+                    return;
+                }
+
+                const result = data.result || {};
+
+                setStatus(data.message || "Видео успешно обработано", "ok");
+
+                metaBox.textContent =
+                    "file_id: " + (data.file_id || "") + "\n" +
+                    "saved_video_path: " + (data.saved_video_path || "") + "\n" +
+                    "status: " + (result.status || "") + "\n" +
+                    "target_level: " + (result.target_level || "") + "\n" +
+                    "transcript_file: " + (result.transcript_file || "") + "\n" +
+                    "adapted_file: " + (result.adapted_file || "");
+
+                transcriptOutput.value = result.transcript_text || "";
+                adaptedOutput.value = result.adapted_text || "";
+
+            } catch (err) {
+                setStatus("Сетевая ошибка или разрыв соединения.", "error");
+                metaBox.textContent = String(err);
+            } finally {
+                setLoadingState(false);
+            }
+        });
+    </script>
+</body>
+</html>
+EOF
