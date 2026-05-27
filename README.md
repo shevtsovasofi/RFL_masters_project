@@ -44,4 +44,11 @@ To find the optimal balance between stylistic simplification and semantic accura
 | **Type-Token Ratio (TTR)** | 0.502481 | 0.682310 |
 | **Moving-Average TTR (MATTR)** | 0.826314 | 0.835526 |
 | **Measure of Textual Lexical Diversity (MTLD)** | 108.018818 | 151.401263 |
+🎯 **BERTScore (Precision): 0.7567**
+
+---
+
+### 📊 Model Evaluation
+
+
 ![Linguistic Metrics Comparison](images/comparison_chart.png)
