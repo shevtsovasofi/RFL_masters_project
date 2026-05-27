@@ -1,0 +1,16 @@
+# Виртуальное окружение
+.venv/
+env/
+venv/
+ENV/
+
+# Кэш Python и spaCy
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Системные файлы Mac
+.DS_Store
