@@ -26,7 +26,7 @@ The complete workflow of the text processing and simplification pipeline is illu
 
 To find the optimal balance between stylistic simplification and semantic accuracy, multiple LLMs were systematically benchmarked.  
 
-│### 📊 Model Evaluation: YandexGPT 5 Pro Analysis
+📊 Model Evaluation: YandexGPT 5 Pro Analysis
 
 **YandexGPT 5 Pro**:
 | Parameter | Original Lecture | Simplified Text |
@@ -44,3 +44,4 @@ To find the optimal balance between stylistic simplification and semantic accura
 | **Type-Token Ratio (TTR)** | 0.502481 | 0.682310 |
 | **Moving-Average TTR (MATTR)** | 0.826314 | 0.835526 |
 | **Measure of Textual Lexical Diversity (MTLD)** | 108.018818 | 151.401263 |
+![Linguistic Metrics Comparison](images/comparison_chart.png)
